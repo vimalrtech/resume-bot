@@ -3,121 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chat with Vimal</title>
+  <title>Chat • Vimal Ramakrishnan</title>
   <style>
-    :root{
-      --bg:#0b0e14;         /* dark navy; change to #000 for pure black */
-      --panel:#0f1420;
-      --card:#12182a;
-      --border:#1f2a44;
-      --text:#eef1fb;
-      --muted:#9aa6c5;
-      --accent:#5c8cff;     /* professional blue */
-      --accent-2:#3dd29e;   /* highlight */
-    }
+    :root{--bg:#000;--panel:#0b0b0b;--text:#f2f2f2;--muted:#a6a6a6;--border:#1a1a1a;--btn:#222}
     *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    body{margin:0;background:radial-gradient(1200px 600px at 20% -10%, #0f1a30 0%, var(--bg) 50%), var(--bg); color:var(--text)}
-    .wrap{max-width:860px;margin:28px auto;padding:16px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px #3dd29e90}
-    h1{font-size:18px;margin:0}
-    .sub{color:var(--muted);font-size:13px;margin-top:2px}
+    body{margin:0;background:var(--bg);color:var(--text)}
+    .wrap{max-width:800px;margin:24px auto;padding:16px}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
-    .chat{height:64vh;min-height:420px;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:12px}
-    .bubble{max-width:85%;padding:10px 12px;border-radius:12px;line-height:1.4;border:1px solid var(--border)}
-    .me{align-self:flex-end;background:#0e1430}
-    .bot{align-self:flex-start;background:#0d1326}
-    .input{display:flex;gap:10px;margin-top:12px}
-    input[type=text]{flex:1;padding:12px 14px;border-radius:12px;background:#0d1326;color:var(--text);border:1px solid var(--border);outline:none}
-    button{padding:12px 16px;border-radius:12px;border:1px solid #2a3e7a;background:linear-gradient(135deg,#5c8cff,#4c78ff);color:#fff;cursor:pointer}
+    .title{font-size:16px;margin:0 0 10px 0;color:#ddd}
+    .chat{height:65vh;min-height:440px;overflow:auto;display:flex;flex-direction:column;gap:10px;
+          padding:10px;border:1px solid var(--border);border-radius:12px;background:#0a0a0a}
+    .bubble{max-width:85%;padding:10px 12px;border-radius:12px;line-height:1.45;border:1px solid var(--border)}
+    .bot{align-self:flex-start;background:#0f0f0f}
+    .me{align-self:flex-end;background:#131313}
+    .input{display:flex;gap:8px;margin-top:12px}
+    input[type=text]{flex:1;padding:12px 14px;border-radius:10px;background:#0a0a0a;color:var(--text);
+                     border:1px solid var(--border);outline:none}
+    button{padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--btn);
+           color:#eee;cursor:pointer}
     button:disabled{opacity:.6;cursor:not-allowed}
-    .toolbar{display:flex;gap:8px}
-    .tab{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0d1326;color:var(--text);cursor:pointer}
-    .slide{position:fixed;right:16px;bottom:16px;width:320px;max-width:90vw;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:none}
-    .slide header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
-    .slide .body{padding:14px;display:grid;gap:8px}
-    .kv{display:grid;grid-template-columns:96px 1fr;gap:8px;font-size:14px}
-    .pill{display:inline-block;padding:4px 8px;border:1px solid var(--border);border-radius:999px;background:#0d1326;font-size:12px;color:#c9d4ff;margin:2px 6px 2px 0}
-    a{color:#aecdff;text-decoration:none}
-    a:hover{text-decoration:underline}
     .hint{color:var(--muted);font-size:12px;margin-top:8px}
+    .toolbar{display:flex;justify-content:flex-end;margin-top:10px}
+    .tab{font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:#0a0a0a;color:#ddd}
+    .slide{position:fixed;right:16px;bottom:16px;width:320px;max-width:92vw;background:#0b0b0b;border:1px solid var(--border);
+           border-radius:12px;display:none;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+    .slide header{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--border)}
+    .slide .body{padding:12px;display:grid;gap:8px}
+    .kv{display:grid;grid-template-columns:90px 1fr;gap:8px;font-size:14px}
+    a{color:#9ec1ff;text-decoration:none} a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="dot"></div>
-        <div>
-          <h1>Chat with Vimal</h1>
-          <div class="sub">Ask about experience, roles, relocation, or visa.</div>
-        </div>
-      </div>
-      <div class="toolbar">
-        <button class="tab" id="contactBtn">Contact</button>
-      </div>
-    </div>
-
     <div class="card">
+      <h2 class="title">Chat with Vimal</h2>
       <div id="chat" class="chat"></div>
       <div class="input">
         <input id="msg" type="text" placeholder="Type your question and press Enter…" />
         <button id="send">Send</button>
       </div>
+      <div class="toolbar">
+        <button class="tab" id="contactBtn">Contact</button>
+      </div>
       <div class="hint">Try: “Summarize your Mu Sigma experience” • “Why the gap?” • “Where can you relocate?”</div>
     </div>
   </div>
 
-  <!-- Contact slide -->
+  <!-- Contact card -->
   <section class="slide" id="contact">
     <header>
-      <strong>Contact Vimal</strong>
+      <strong>Contact</strong>
       <button class="tab" id="closeContact">Close</button>
     </header>
     <div class="body">
-      <div class="kv"><div>Name</div><div id="c_name"></div></div>
-      <div class="kv"><div>Location</div><div id="c_loc"></div></div>
-      <div class="kv"><div>Roles</div><div id="c_roles"></div></div>
-      <div class="kv"><div>Email</div><div id="c_email"></div></div>
-      <div class="kv"><div>LinkedIn</div><div><a id="c_li" target="_blank" rel="noopener">Open profile</a></div></div>
-      <div class="kv"><div>Portfolio</div><div><a id="c_web" target="_blank" rel="noopener">Open site</a></div></div>
-      <div class="kv"><div>Highlights</div>
-        <div id="c_tags"></div>
-      </div>
+      <div class="kv"><div>Name</div><div id="c_name">Vimal Ramakrishnan</div></div>
+      <div class="kv"><div>Email</div><div><a id="c_email" href="mailto:you@example.com">you@example.com</a></div></div>
+      <div class="kv"><div>LinkedIn</div><div><a id="c_li" href="https://linkedin.com/in/your-profile" target="_blank">Open profile</a></div></div>
+      <div class="kv"><div>Location</div><div id="c_loc">Bengaluru, India (previously Madrid, ES)</div></div>
+      <div class="kv"><div>Roles</div><div id="c_roles">AI PM • AI Solutions Lead • GenAI Engineer (RAG/Agents)</div></div>
     </div>
   </section>
 
   <script>
-    // ===== Your facts (edit these) =====
-    const BIO = {
-      name: "Vimal Ramakrishnan",
-      email: "youremail@example.com",
-      linkedIn: "https://www.linkedin.com/in/your-profile",
-      website: "https://your-site.com",
-      headline: "AI Product Leader & Strategist • GenAI, RAG, Agents • 10+ yrs",
-      location: "Bengaluru, India (previously Madrid, ES)",
-      workAuth: "Authorized to work in India and EU (Blue Card). Open to sponsorship where needed.",
-      relocation: "Open to Europe (anywhere), Bengaluru, and Dubai",
-      notice: "Immediate",
-      roles: "AI Product Manager • AI Solutions Lead • GenAI Engineer (RAG/Agents) • Managerial roles in AI",
-      gapNote: "Returned to India for a family emergency; built AI/RAG automations and agentic workflows (Hugging Face, LangChain, n8n).",
-      strengths: "GenAI product strategy, RAG, LangChain, Python, SQL, analytics, A/B testing, delivery leadership",
-      highlights: [
-        "GPT-powered analytics: +31% engagement; reduced ops friction.",
-        "AI marketing/CS automations: +18% conversions, −22% CAC.",
-        "GPT-4 + vector search matching engine: ~−80% manual work, +35% placements."
-      ],
-      experience: [
-        { company:"Mu Sigma", role:"Analytics Consultant → Apprentice Leader / Delivery Head", duration:"4 yrs", scope:"Managed 22 data scientists; analytics for Fortune 500 across regions.", clients:["Suncorp (AU)", "Nike (US/EU)", "Microsoft (US)", "AbbVie (Pharma)"] },
-        { company:"TravelTriangle", role:"Senior Data Scientist", duration:"pre-MBA", scope:"Growth & product analytics; experiments; recommendations/forecasting." },
-        { company:"IE University", role:"MBA + MS; later Senior Associate Director", duration:"post-TravelTriangle", scope:"Leadership at IE; later moved to entrepreneurship." },
-        { company:"Payflow", role:"Head of Data", duration:"3 months", scope:"Set up data function foundations; then joined IE." },
-        { company:"Founder", role:"AI Consultancy (GenAI/RAG/Agents)", duration:"recent", scope:"Agentic workflows and RAG automations (Hugging Face, LangChain, n8n) for clients." }
-      ]
-    };
-
-    // ===== UI helpers =====
     const chat = document.getElementById('chat');
     const msg  = document.getElementById('msg');
     const send = document.getElementById('send');
@@ -125,13 +72,13 @@
     function addBubble(text, cls){
       const b = document.createElement('div');
       b.className = 'bubble ' + cls;
-      b.textContent = text;
+      b.textContent = String(text ?? '');  // ensure string to avoid [object Object]
       chat.appendChild(b);
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // Initial greeting (from “you”)
-    addBubble(`Hello! I’m ${BIO.name}. I’m an ${BIO.headline}. I’ve worked across Mu Sigma, TravelTriangle, IE, Payflow, and my AI consultancy. Ask me anything about my experience, skills, visa/relocation, or availability.`, 'bot');
+    // Natural intro (as you requested)
+    addBubble("Hi, good morning/afternoon! I’m Vimal Ramakrishnan. I’m an experienced project manager with AI integrations. Ask me anything to know more about me.", "bot");
 
     async function ask(){
       const q = msg.value.trim();
@@ -143,12 +90,12 @@
         const r = await fetch('/api/chat', {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ message:q, bio:BIO })
+          body: JSON.stringify({ message: q }) // send ONLY the string
         });
-        const data = await r.json();
-        addBubble(data.answer || data.error || "Sorry, I couldn’t answer.", "bot");
+        const data = await r.json().catch(()=>({ error:'Bad JSON' }));
+        addBubble((data && (data.answer || data.error)) || 'Sorry, no answer.', 'bot');
       }catch(e){
-        addBubble("Network error. Please try again.", "bot");
+        addBubble('Network error. Please try again.', 'bot');
       }finally{
         send.disabled = false;
       }
@@ -157,24 +104,10 @@
     send.onclick = ask;
     msg.addEventListener('keydown', (e)=>{ if(e.key==='Enter') ask(); });
 
-    // Contact slide wiring
-    const contactBtn = document.getElementById('contactBtn');
+    // Contact card
     const contact = document.getElementById('contact');
-    const closeContact = document.getElementById('closeContact');
-
-    contactBtn.onclick = () => {
-      // fill fields
-      document.getElementById('c_name').textContent = BIO.name;
-      document.getElementById('c_loc').textContent = BIO.location;
-      document.getElementById('c_roles').textContent = BIO.roles;
-      document.getElementById('c_email').textContent = BIO.email;
-      const li = document.getElementById('c_li'); li.href = BIO.linkedIn; li.textContent = BIO.linkedIn;
-      const web = document.getElementById('c_web'); web.href = BIO.website; web.textContent = BIO.website;
-      const tags = document.getElementById('c_tags'); tags.innerHTML="";
-      (BIO.highlights || []).forEach(t => { const s=document.createElement('span'); s.className='pill'; s.textContent=t; tags.appendChild(s); });
-      contact.style.display = 'block';
-    };
-    closeContact.onclick = () => contact.style.display = 'none';
+    document.getElementById('contactBtn').onclick = ()=> contact.style.display = 'block';
+    document.getElementById('closeContact').onclick = ()=> contact.style.display = 'none';
   </script>
 </body>
 </html>

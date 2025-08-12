@@ -1,52 +1,37 @@
-// api/chat.js — Vercel Serverless Function (CommonJS)
-const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args)).catch(()=>global.fetch(...args));
-
-function bioToFacts(bio = {}) {
-  const lines = [];
-  lines.push(`Name: ${bio.name || "N/A"}`);
-  lines.push(`Headline: ${bio.headline || "N/A"}`);
-  lines.push(`Location: ${bio.location || "N/A"}`);
-  lines.push(`Work authorization: ${bio.workAuth || "N/A"}`);
-  lines.push(`Relocation: ${bio.relocation || "N/A"}`);
-  lines.push(`Notice: ${bio.notice || "N/A"}`);
-  lines.push(`Target roles: ${bio.roles || "N/A"}`);
-  if (bio.gapNote) lines.push(`Gap explanation: ${bio.gapNote}`);
-  if (Array.isArray(bio.highlights) && bio.highlights.length) {
-    lines.push("Highlights:");
-    bio.highlights.forEach((h, i) => lines.push(`  - ${h}`));
-  }
-  if (Array.isArray(bio.experience) && bio.experience.length) {
-    lines.push("Experience:");
-    bio.experience.forEach((x) => {
-      const clients = x.clients && x.clients.length ? ` | Clients: ${x.clients.join(", ")}` : "";
-      lines.push(`  - ${x.company} — ${x.role} (${x.duration}) | ${x.scope || ""}${clients}`);
-    });
-  }
-  return lines.join("\n");
-}
-
+// api/chat.js — Vercel Serverless Function (Node 18+ has fetch built-in)
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   try {
-    const { message, bio } = req.body || {};
+    const { message } = req.body || {};
     if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: 'Missing OPENAI_API_KEY' });
-    if (!message) return res.status(400).json({ error: 'Missing message' });
+    if (!message || typeof message !== 'string') return res.status(400).json({ error: 'Missing message' });
 
-    const facts = bioToFacts(bio);
+    // Keep your facts here (server-side) to avoid sending big objects from the client
+    const FACTS = `
+Name: Vimal Ramakrishnan
+Summary: Experienced project/AI product leader integrating AI into products and workflows.
+Core: GenAI, RAG, agents (Hugging Face, LangChain), n8n automations; Python, SQL; delivery & stakeholder mgmt.
+Experience:
+- Mu Sigma: Analytics Consultant → Apprentice Leader/Delivery Head (4 yrs). Managed 22 data scientists. Clients: Suncorp (AU), Nike (US/EU), Microsoft (US), AbbVie (Pharma).
+- TravelTriangle: Senior Data Scientist (growth/product analytics, experimentation).
+- IE University: MBA + MS; later Senior Associate Director.
+- Payflow: Head of Data (3 months).
+- Founder: AI consultancy building agentic workflows and RAG automations.
+Recent: Returned to India for a family emergency; last 2 yrs building AI/RAG/agents with HF/LangChain/n8n.
+Work authorization: India; EU Blue Card; open to sponsorship where needed.
+Relocation: Anywhere in Europe, Bengaluru, Dubai. Notice: Immediate.
+Target roles: AI Product Manager / AI Solutions Lead / GenAI Engineer (RAG/Agents); managerial roles in AI.
+Tone: warm, human, a touch of humor, but professional.
+    `.trim();
 
     const system = `
-You are ${bio?.name || "the candidate"}’s AI assistant. Answer in FIRST PERSON as the candidate.
-Be concise (2–5 sentences), professional, and helpful. Use ONLY the facts provided below.
-If a detail isn't present, state you'll follow up. Avoid sharing private data not in facts.
+You are Vimal Ramakrishnan's AI assistant. Speak in FIRST PERSON as Vimal.
+Keep it concise (2–5 sentences), warm, a little humorous but professional.
+Use ONLY the FACTS. If something isn't in FACTS, say you'll follow up.
 
-FACTS:\n${facts}
-
-Answering rules:
-- “Why the gap?” → explain the India family emergency + continued AI/RAG/agents work (Hugging Face, LangChain, n8n).
-- “Visa/work authorization?” → use Work authorization + Relocation lines.
-- Prefer concrete outcomes (engagement lift, conversion/CAC improvements) when asked about impact.
-- For role fit questions, tie back to target roles & strengths.
-`;
+FACTS:
+${FACTS}
+`.trim();
 
     const resp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -66,12 +51,10 @@ Answering rules:
     });
 
     const json = await resp.json();
-    if (!resp.ok) {
-      return res.status(resp.status).json(json);
-    }
+    if (!resp.ok) return res.status(resp.status).json(json);
 
-    const answer = json.choices?.[0]?.message?.content?.trim() || 'Sorry, I have no answer.';
-    return res.status(200).json({ answer });
+    const answer = (json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content || '').trim();
+    return res.status(200).json({ answer: answer || 'I’ll follow up with details shortly.' });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: 'Server error' });
