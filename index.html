@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ItsAboutMe — Chat</title>
+  <style>
+    :root{--bg:#0b0b0f;--card:#14141c;--text:#e8e8f0;--muted:#a9a9b8;--accent:#7c5cff;}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;}
+    body{margin:0;background:linear-gradient(120deg,#0b0b0f,#13131a 60%);}
+    .wrap{max-width:720px;margin:24px auto;padding:16px;}
+    .card{background:var(--card); border:1px solid #262636; border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .header{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
+    .dot{width:10px;height:10px;border-radius:50%;background:#3ce281; box-shadow:0 0 10px #3ce281aa;}
+    h1{font-size:18px;color:var(--text); margin:0;}
+    .sub{color:var(--muted); font-size:13px;}
+    .chat{height:62vh; overflow:auto; display:flex; flex-direction:column; gap:10px; padding:8px; background:#0f0f17; border-radius:12px; border:1px solid #232334}
+    .bubble{max-width:85%; padding:10px 12px; border-radius:12px; line-height:1.35}
+    .me{align-self:flex-end; background:#1c1c2b; color:var(--text); border:1px solid #2f2f47}
+    .bot{align-self:flex-start; background:#12121a; color:#eaeaf5; border:1px solid #2a2a3e}
+    .input{display:flex; gap:10px; margin-top:12px}
+    input[type=text]{flex:1; padding:12px 14px; border-radius:12px; background:#0f0f17; color:var(--text); border:1px solid #2a2a3e; outline:none}
+    button{padding:12px 16px; border-radius:12px; border:1px solid #372a7a; background:linear-gradient(135deg,#7c5cff,#5a48ff); color:white; cursor:pointer}
+    .hint{color:#8e8ea0; font-size:12px; margin-top:8px}
+    .tag{display:inline-block; font-size:11px; color:#d3cdfc; background:#19182b; border:1px solid #2c2856; padding:4px 8px; border-radius:999px; margin-right:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="header">
+        <div class="dot"></div>
+        <div>
+          <h1>ItsAboutMe — your résumé chatbot</h1>
+          <div class="sub">“Stand out. Speak up. It’s About Me.”</div>
+        </div>
+      </div>
+
+      <div id="tags"></div>
+
+      <div id="chat" class="chat"></div>
+
+      <div class="input">
+        <input id="msg" type="text" placeholder="Ask about experience, skills, visa, gaps…" />
+        <button id="send">Send</button>
+      </div>
+      <div class="hint">Tip: try “Why the gap in 2022?” or “Do you have work authorization?”</div>
+    </div>
+  </div>
+
+  <script>
+    const BIO = {
+  name: "Vimal Ramakrishnan",
+  headline: "AI Product Leader & Strategist • GenAI, RAG, Agents • 10+ yrs",
+  location: "Bengaluru, India (previously Madrid, ES)",
+  workAuth: "Authorized to work in India and EU (Blue Card). Open to sponsorship where needed.",
+  relocation: "Open to Europe (anywhere), Bengaluru, and Dubai; remote or hybrid.",
+  gapNote: "Returned to India for a family emergency. In the last 2 years, built AI/RAG automations and agentic workflows using Hugging Face, LangChain, and n8n.",
+  strengths: "GenAI product strategy, RAG systems, LangChain, Python, SQL, analytics, A/B testing, delivery leadership",
+  notice: "Immediate",
+  roles: "AI Product Manager • AI Solutions Lead • GenAI Engineer (RAG/Agents) • Managerial roles in AI",
+  highlights: [
+    "Built GPT-powered analytics driving +31% engagement and reduced ops friction.",
+    "Shipped AI marketing/CS automations: +18% conversions, −22% CAC.",
+    "Led GPT-4 + vector search matching engine: ~−80% manual work, +35% placements."
+  ],
+  experience: [
+    {
+      company: "Mu Sigma",
+      role: "Analytics Consultant → Apprentice Leader / Delivery Head",
+      duration: "4 years (post Mechanical Engineering, campus placement)",
+      scope: "Managed 22 data scientists; delivered analytics solutions to Fortune 500s across regions.",
+      clients: ["Suncorp (Insurance, Australia)", "Nike (Retail, US & Europe)", "Microsoft (US)", "AbbVie (Pharma)"]
+    },
+    {
+      company: "TravelTriangle",
+      role: "Senior Data Scientist",
+      duration: "pre-MBA",
+      scope: "Growth & product analytics; experimentation; recommendation and forecasting work."
+    },
+    {
+      company: "IE University",
+      role: "MBA + MS (dual); later Senior Associate Director",
+      duration: "post-TravelTriangle",
+      scope: "Leadership role at IE after graduation; later moved to entrepreneurship."
+    },
+    {
+      company: "Payflow",
+      role: "Head of Data",
+      duration: "3 months",
+      scope: "Stood up data function foundations; moved to IE role shortly after."
+    },
+    {
+      company: "Founder",
+      role: "AI Consultancy (GenAI/RAG/Agents)",
+      duration: "most recent",
+      scope: "Built agentic workflows and RAG automations with Hugging Face, LangChain, and n8n for clients."
+    }
+  ]
+};
+
+
+    // Optional tags UI
+    const tagEl = document.getElementById('tags');
+    ["Upload résumé", "Customize what to share", "Generate link"].forEach(t=>{
+      const s=document.createElement('span'); s.className='tag'; s.textContent=t; tagEl.appendChild(s);
+    });
+
+    const chat = document.getElementById('chat');
+    const msg = document.getElementById('msg');
+    const send = document.getElementById('send');
+
+    function addBubble(text, cls){ const b=document.createElement('div'); b.className='bubble '+cls; b.textContent=text; chat.appendChild(b); chat.scrollTop=chat.scrollHeight; }
+    addBubble("Hi! I can answer on my behalf about skills, gaps, and work authorization. Ask me anything.", "bot");
+
+    async function ask(){
+      const q = msg.value.trim();
+      if(!q) return;
+      addBubble(q, "me"); msg.value="";
+      const r = await fetch('/api/chat', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message:q, bio:BIO })
+      });
+      const data = await r.json();
+      addBubble(data.answer || data.error || "Hmm, no answer.", "bot");
+    }
+
+    send.onclick = ask;
+    msg.addEventListener('keydown', e => { if(e.key==='Enter') ask(); });
+  </script>
+</body>
+</html>
