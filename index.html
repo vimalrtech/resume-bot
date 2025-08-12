@@ -3,64 +3,78 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chat • Vimal Ramakrishnan</title>
+  <title>Vimal's AI Chatbot • I am a AI bot designed Vimal to answer any questions you might have which is not covered in my resume</title>
   <style>
-    :root{--bg:#000;--panel:#0b0b0b;--text:#f2f2f2;--muted:#a6a6a6;--border:#1a1a1a;--btn:#222}
+    :root{
+      --bg:#000; --panel:#0b0b0b; --border:#1a1a1a;
+      --text:#eaeaea; --muted:#a6a6a6; --me:#151515; --bot:#0f0f0f;
+      --btn:#1a1a1a; --btnh:#202020;
+    }
     *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
     body{margin:0;background:var(--bg);color:var(--text)}
-    .wrap{max-width:800px;margin:24px auto;padding:16px}
+    .wrap{max-width:900px;margin:0 auto;padding:16px 16px 24px}
+    .header{padding:14px 0 8px}
+    .title{margin:0 0 4px 0;font-size:16px;color:#ddd}
+    .sub{color:var(--muted);font-size:13px}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
-    .title{font-size:16px;margin:0 0 10px 0;color:#ddd}
-    .chat{height:65vh;min-height:440px;overflow:auto;display:flex;flex-direction:column;gap:10px;
+    .chat{height:68vh;min-height:460px;overflow:auto;display:flex;flex-direction:column;gap:10px;
           padding:10px;border:1px solid var(--border);border-radius:12px;background:#0a0a0a}
-    .bubble{max-width:85%;padding:10px 12px;border-radius:12px;line-height:1.45;border:1px solid var(--border)}
-    .bot{align-self:flex-start;background:#0f0f0f}
-    .me{align-self:flex-end;background:#131313}
-    .input{display:flex;gap:8px;margin-top:12px}
+    .bubble{max-width:80%;padding:10px 12px;border-radius:14px;line-height:1.45;border:1px solid var(--border);
+            box-shadow:0 4px 18px rgba(0,0,0,.35)}
+    .bot{align-self:flex-start;background:var(--bot)}
+    .me{align-self:flex-end;background:var(--me)}
+    .inputbar{display:flex;gap:8px;margin-top:12px}
     input[type=text]{flex:1;padding:12px 14px;border-radius:10px;background:#0a0a0a;color:var(--text);
                      border:1px solid var(--border);outline:none}
     button{padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--btn);
            color:#eee;cursor:pointer}
+    button:hover{background:var(--btnh)}
     button:disabled{opacity:.6;cursor:not-allowed}
-    .hint{color:var(--muted);font-size:12px;margin-top:8px}
-    .toolbar{display:flex;justify-content:flex-end;margin-top:10px}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    .hint{color:var(--muted);font-size:12px}
     .tab{font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:#0a0a0a;color:#ddd}
-    .slide{position:fixed;right:16px;bottom:16px;width:320px;max-width:92vw;background:#0b0b0b;border:1px solid var(--border);
+    .sheet{position:fixed;right:16px;bottom:16px;width:320px;max-width:92vw;background:#0b0b0b;border:1px solid var(--border);
            border-radius:12px;display:none;box-shadow:0 18px 50px rgba(0,0,0,.5)}
-    .slide header{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--border)}
-    .slide .body{padding:12px;display:grid;gap:8px}
+    .sheet header{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--border)}
+    .sheet .body{padding:12px;display:grid;gap:8px}
     .kv{display:grid;grid-template-columns:90px 1fr;gap:8px;font-size:14px}
     a{color:#9ec1ff;text-decoration:none} a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="header">
+      <h2 class="title">Chat</h2>
+      <div class="sub">Ask about experience, projects, relocation, or visa.</div>
+    </div>
+
     <div class="card">
-      <h2 class="title">Chat with Vimal</h2>
       <div id="chat" class="chat"></div>
-      <div class="input">
+
+      <div class="inputbar">
         <input id="msg" type="text" placeholder="Type your question and press Enter…" />
         <button id="send">Send</button>
       </div>
-      <div class="toolbar">
+
+      <div class="footer">
+        <div class="hint">Try: “Summarize your Mu Sigma experience” • “Why the gap?” • “Where can you relocate?”</div>
         <button class="tab" id="contactBtn">Contact</button>
       </div>
-      <div class="hint">Try: “Summarize your Mu Sigma experience” • “Why the gap?” • “Where can you relocate?”</div>
     </div>
   </div>
 
-  <!-- Contact card -->
-  <section class="slide" id="contact">
+  <!-- Contact -->
+  <section class="sheet" id="contact">
     <header>
       <strong>Contact</strong>
       <button class="tab" id="closeContact">Close</button>
     </header>
     <div class="body">
-      <div class="kv"><div>Name</div><div id="c_name">Vimal Ramakrishnan</div></div>
-      <div class="kv"><div>Email</div><div><a id="c_email" href="mailto:you@example.com">you@example.com</a></div></div>
-      <div class="kv"><div>LinkedIn</div><div><a id="c_li" href="https://linkedin.com/in/your-profile" target="_blank">Open profile</a></div></div>
-      <div class="kv"><div>Location</div><div id="c_loc">Bengaluru, India (previously Madrid, ES)</div></div>
-      <div class="kv"><div>Roles</div><div id="c_roles">AI PM • AI Solutions Lead • GenAI Engineer (RAG/Agents)</div></div>
+      <div class="kv"><div>Name</div><div>Vimal Ramakrishnan</div></div>
+      <div class="kv"><div>Email</div><div><a href="mailto:you@example.com">you@example.com</a></div></div>
+      <div class="kv"><div>LinkedIn</div><div><a href="https://linkedin.com/in/your-profile" target="_blank">Open profile</a></div></div>
+      <div class="kv"><div>Location</div><div>Bengaluru, India (previously Madrid, ES)</div></div>
+      <div class="kv"><div>Roles</div><div>AI PM • AI Solutions Lead • GenAI Engineer (RAG/Agents)</div></div>
     </div>
   </section>
 
@@ -72,13 +86,13 @@
     function addBubble(text, cls){
       const b = document.createElement('div');
       b.className = 'bubble ' + cls;
-      b.textContent = String(text ?? '');  // ensure string to avoid [object Object]
+      b.textContent = typeof text === 'string' ? text : JSON.stringify(text);
       chat.appendChild(b);
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // Natural intro (as you requested)
-    addBubble("Hi, good morning/afternoon! I’m Vimal Ramakrishnan. I’m an experienced project manager with AI integrations. Ask me anything to know more about me.", "bot");
+    // Natural intro
+    addBubble("Hi there! I’m Vimal. Ask me anything to know more about me.", "bot");
 
     async function ask(){
       const q = msg.value.trim();
@@ -90,10 +104,11 @@
         const r = await fetch('/api/chat', {
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ message: q }) // send ONLY the string
+          body: JSON.stringify({ message: q })
         });
-        const data = await r.json().catch(()=>({ error:'Bad JSON' }));
-        addBubble((data && (data.answer || data.error)) || 'Sorry, no answer.', 'bot');
+        const data = await r.json();
+        const answer = (data && typeof data.answer === 'string') ? data.answer : (data && data.error) || 'Sorry, no answer.';
+        addBubble(answer, 'bot');
       }catch(e){
         addBubble('Network error. Please try again.', 'bot');
       }finally{
@@ -104,7 +119,7 @@
     send.onclick = ask;
     msg.addEventListener('keydown', (e)=>{ if(e.key==='Enter') ask(); });
 
-    // Contact card
+    // Contact
     const contact = document.getElementById('contact');
     document.getElementById('contactBtn').onclick = ()=> contact.style.display = 'block';
     document.getElementById('closeContact').onclick = ()=> contact.style.display = 'none';
