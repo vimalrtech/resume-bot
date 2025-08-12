@@ -3,131 +3,178 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ItsAboutMe — Chat</title>
+  <title>Chat with Vimal</title>
   <style>
-    :root{--bg:#0b0b0f;--card:#14141c;--text:#e8e8f0;--muted:#a9a9b8;--accent:#7c5cff;}
-    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;}
-    body{margin:0;background:linear-gradient(120deg,#0b0b0f,#13131a 60%);}
-    .wrap{max-width:720px;margin:24px auto;padding:16px;}
-    .card{background:var(--card); border:1px solid #262636; border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.3)}
-    .header{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
-    .dot{width:10px;height:10px;border-radius:50%;background:#3ce281; box-shadow:0 0 10px #3ce281aa;}
-    h1{font-size:18px;color:var(--text); margin:0;}
-    .sub{color:var(--muted); font-size:13px;}
-    .chat{height:62vh; overflow:auto; display:flex; flex-direction:column; gap:10px; padding:8px; background:#0f0f17; border-radius:12px; border:1px solid #232334}
-    .bubble{max-width:85%; padding:10px 12px; border-radius:12px; line-height:1.35}
-    .me{align-self:flex-end; background:#1c1c2b; color:var(--text); border:1px solid #2f2f47}
-    .bot{align-self:flex-start; background:#12121a; color:#eaeaf5; border:1px solid #2a2a3e}
-    .input{display:flex; gap:10px; margin-top:12px}
-    input[type=text]{flex:1; padding:12px 14px; border-radius:12px; background:#0f0f17; color:var(--text); border:1px solid #2a2a3e; outline:none}
-    button{padding:12px 16px; border-radius:12px; border:1px solid #372a7a; background:linear-gradient(135deg,#7c5cff,#5a48ff); color:white; cursor:pointer}
-    .hint{color:#8e8ea0; font-size:12px; margin-top:8px}
-    .tag{display:inline-block; font-size:11px; color:#d3cdfc; background:#19182b; border:1px solid #2c2856; padding:4px 8px; border-radius:999px; margin-right:6px}
+    :root{
+      --bg:#0b0e14;         /* dark navy; change to #000 for pure black */
+      --panel:#0f1420;
+      --card:#12182a;
+      --border:#1f2a44;
+      --text:#eef1fb;
+      --muted:#9aa6c5;
+      --accent:#5c8cff;     /* professional blue */
+      --accent-2:#3dd29e;   /* highlight */
+    }
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    body{margin:0;background:radial-gradient(1200px 600px at 20% -10%, #0f1a30 0%, var(--bg) 50%), var(--bg); color:var(--text)}
+    .wrap{max-width:860px;margin:28px auto;padding:16px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px #3dd29e90}
+    h1{font-size:18px;margin:0}
+    .sub{color:var(--muted);font-size:13px;margin-top:2px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .chat{height:64vh;min-height:420px;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+    .bubble{max-width:85%;padding:10px 12px;border-radius:12px;line-height:1.4;border:1px solid var(--border)}
+    .me{align-self:flex-end;background:#0e1430}
+    .bot{align-self:flex-start;background:#0d1326}
+    .input{display:flex;gap:10px;margin-top:12px}
+    input[type=text]{flex:1;padding:12px 14px;border-radius:12px;background:#0d1326;color:var(--text);border:1px solid var(--border);outline:none}
+    button{padding:12px 16px;border-radius:12px;border:1px solid #2a3e7a;background:linear-gradient(135deg,#5c8cff,#4c78ff);color:#fff;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .toolbar{display:flex;gap:8px}
+    .tab{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0d1326;color:var(--text);cursor:pointer}
+    .slide{position:fixed;right:16px;bottom:16px;width:320px;max-width:90vw;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:none}
+    .slide header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
+    .slide .body{padding:14px;display:grid;gap:8px}
+    .kv{display:grid;grid-template-columns:96px 1fr;gap:8px;font-size:14px}
+    .pill{display:inline-block;padding:4px 8px;border:1px solid var(--border);border-radius:999px;background:#0d1326;font-size:12px;color:#c9d4ff;margin:2px 6px 2px 0}
+    a{color:#aecdff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .hint{color:var(--muted);font-size:12px;margin-top:8px}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <div class="header">
+    <div class="topbar">
+      <div class="brand">
         <div class="dot"></div>
         <div>
-          <h1>ItsAboutMe — your résumé chatbot</h1>
-          <div class="sub">“Stand out. Speak up. It’s About Me.”</div>
+          <h1>Chat with Vimal</h1>
+          <div class="sub">Ask about experience, roles, relocation, or visa.</div>
         </div>
       </div>
+      <div class="toolbar">
+        <button class="tab" id="contactBtn">Contact</button>
+      </div>
+    </div>
 
-      <div id="tags"></div>
-
+    <div class="card">
       <div id="chat" class="chat"></div>
-
       <div class="input">
-        <input id="msg" type="text" placeholder="Ask about experience, skills, visa, gaps…" />
+        <input id="msg" type="text" placeholder="Type your question and press Enter…" />
         <button id="send">Send</button>
       </div>
-      <div class="hint">Tip: try “Why the gap in 2022?” or “Do you have work authorization?”</div>
+      <div class="hint">Try: “Summarize your Mu Sigma experience” • “Why the gap?” • “Where can you relocate?”</div>
     </div>
   </div>
 
+  <!-- Contact slide -->
+  <section class="slide" id="contact">
+    <header>
+      <strong>Contact Vimal</strong>
+      <button class="tab" id="closeContact">Close</button>
+    </header>
+    <div class="body">
+      <div class="kv"><div>Name</div><div id="c_name"></div></div>
+      <div class="kv"><div>Location</div><div id="c_loc"></div></div>
+      <div class="kv"><div>Roles</div><div id="c_roles"></div></div>
+      <div class="kv"><div>Email</div><div id="c_email"></div></div>
+      <div class="kv"><div>LinkedIn</div><div><a id="c_li" target="_blank" rel="noopener">Open profile</a></div></div>
+      <div class="kv"><div>Portfolio</div><div><a id="c_web" target="_blank" rel="noopener">Open site</a></div></div>
+      <div class="kv"><div>Highlights</div>
+        <div id="c_tags"></div>
+      </div>
+    </div>
+  </section>
+
   <script>
+    // ===== Your facts (edit these) =====
     const BIO = {
-  name: "Vimal Ramakrishnan",
-  headline: "AI Product Leader & Strategist • GenAI, RAG, Agents • 10+ yrs",
-  location: "Bengaluru, India (previously Madrid, ES)",
-  workAuth: "Authorized to work in India and EU (Blue Card). Open to sponsorship where needed.",
-  relocation: "Open to Europe (anywhere), Bengaluru, and Dubai; remote or hybrid.",
-  gapNote: "Returned to India for a family emergency. In the last 2 years, built AI/RAG automations and agentic workflows using Hugging Face, LangChain, and n8n.",
-  strengths: "GenAI product strategy, RAG systems, LangChain, Python, SQL, analytics, A/B testing, delivery leadership",
-  notice: "Immediate",
-  roles: "AI Product Manager • AI Solutions Lead • GenAI Engineer (RAG/Agents) • Managerial roles in AI",
-  highlights: [
-    "Built GPT-powered analytics driving +31% engagement and reduced ops friction.",
-    "Shipped AI marketing/CS automations: +18% conversions, −22% CAC.",
-    "Led GPT-4 + vector search matching engine: ~−80% manual work, +35% placements."
-  ],
-  experience: [
-    {
-      company: "Mu Sigma",
-      role: "Analytics Consultant → Apprentice Leader / Delivery Head",
-      duration: "4 years (post Mechanical Engineering, campus placement)",
-      scope: "Managed 22 data scientists; delivered analytics solutions to Fortune 500s across regions.",
-      clients: ["Suncorp (Insurance, Australia)", "Nike (Retail, US & Europe)", "Microsoft (US)", "AbbVie (Pharma)"]
-    },
-    {
-      company: "TravelTriangle",
-      role: "Senior Data Scientist",
-      duration: "pre-MBA",
-      scope: "Growth & product analytics; experimentation; recommendation and forecasting work."
-    },
-    {
-      company: "IE University",
-      role: "MBA + MS (dual); later Senior Associate Director",
-      duration: "post-TravelTriangle",
-      scope: "Leadership role at IE after graduation; later moved to entrepreneurship."
-    },
-    {
-      company: "Payflow",
-      role: "Head of Data",
-      duration: "3 months",
-      scope: "Stood up data function foundations; moved to IE role shortly after."
-    },
-    {
-      company: "Founder",
-      role: "AI Consultancy (GenAI/RAG/Agents)",
-      duration: "most recent",
-      scope: "Built agentic workflows and RAG automations with Hugging Face, LangChain, and n8n for clients."
-    }
-  ]
-};
+      name: "Vimal Ramakrishnan",
+      email: "youremail@example.com",
+      linkedIn: "https://www.linkedin.com/in/your-profile",
+      website: "https://your-site.com",
+      headline: "AI Product Leader & Strategist • GenAI, RAG, Agents • 10+ yrs",
+      location: "Bengaluru, India (previously Madrid, ES)",
+      workAuth: "Authorized to work in India and EU (Blue Card). Open to sponsorship where needed.",
+      relocation: "Open to Europe (anywhere), Bengaluru, and Dubai",
+      notice: "Immediate",
+      roles: "AI Product Manager • AI Solutions Lead • GenAI Engineer (RAG/Agents) • Managerial roles in AI",
+      gapNote: "Returned to India for a family emergency; built AI/RAG automations and agentic workflows (Hugging Face, LangChain, n8n).",
+      strengths: "GenAI product strategy, RAG, LangChain, Python, SQL, analytics, A/B testing, delivery leadership",
+      highlights: [
+        "GPT-powered analytics: +31% engagement; reduced ops friction.",
+        "AI marketing/CS automations: +18% conversions, −22% CAC.",
+        "GPT-4 + vector search matching engine: ~−80% manual work, +35% placements."
+      ],
+      experience: [
+        { company:"Mu Sigma", role:"Analytics Consultant → Apprentice Leader / Delivery Head", duration:"4 yrs", scope:"Managed 22 data scientists; analytics for Fortune 500 across regions.", clients:["Suncorp (AU)", "Nike (US/EU)", "Microsoft (US)", "AbbVie (Pharma)"] },
+        { company:"TravelTriangle", role:"Senior Data Scientist", duration:"pre-MBA", scope:"Growth & product analytics; experiments; recommendations/forecasting." },
+        { company:"IE University", role:"MBA + MS; later Senior Associate Director", duration:"post-TravelTriangle", scope:"Leadership at IE; later moved to entrepreneurship." },
+        { company:"Payflow", role:"Head of Data", duration:"3 months", scope:"Set up data function foundations; then joined IE." },
+        { company:"Founder", role:"AI Consultancy (GenAI/RAG/Agents)", duration:"recent", scope:"Agentic workflows and RAG automations (Hugging Face, LangChain, n8n) for clients." }
+      ]
+    };
 
-
-    // Optional tags UI
-    const tagEl = document.getElementById('tags');
-    ["Upload résumé", "Customize what to share", "Generate link"].forEach(t=>{
-      const s=document.createElement('span'); s.className='tag'; s.textContent=t; tagEl.appendChild(s);
-    });
-
+    // ===== UI helpers =====
     const chat = document.getElementById('chat');
-    const msg = document.getElementById('msg');
+    const msg  = document.getElementById('msg');
     const send = document.getElementById('send');
 
-    function addBubble(text, cls){ const b=document.createElement('div'); b.className='bubble '+cls; b.textContent=text; chat.appendChild(b); chat.scrollTop=chat.scrollHeight; }
-    addBubble("Hi! I can answer on my behalf about skills, gaps, and work authorization. Ask me anything.", "bot");
+    function addBubble(text, cls){
+      const b = document.createElement('div');
+      b.className = 'bubble ' + cls;
+      b.textContent = text;
+      chat.appendChild(b);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Initial greeting (from “you”)
+    addBubble(`Hello! I’m ${BIO.name}. I’m an ${BIO.headline}. I’ve worked across Mu Sigma, TravelTriangle, IE, Payflow, and my AI consultancy. Ask me anything about my experience, skills, visa/relocation, or availability.`, 'bot');
 
     async function ask(){
       const q = msg.value.trim();
       if(!q) return;
-      addBubble(q, "me"); msg.value="";
-      const r = await fetch('/api/chat', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ message:q, bio:BIO })
-      });
-      const data = await r.json();
-      addBubble(data.answer || data.error || "Hmm, no answer.", "bot");
+      addBubble(q, "me");
+      msg.value=""; send.disabled = true;
+
+      try{
+        const r = await fetch('/api/chat', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ message:q, bio:BIO })
+        });
+        const data = await r.json();
+        addBubble(data.answer || data.error || "Sorry, I couldn’t answer.", "bot");
+      }catch(e){
+        addBubble("Network error. Please try again.", "bot");
+      }finally{
+        send.disabled = false;
+      }
     }
 
     send.onclick = ask;
-    msg.addEventListener('keydown', e => { if(e.key==='Enter') ask(); });
+    msg.addEventListener('keydown', (e)=>{ if(e.key==='Enter') ask(); });
+
+    // Contact slide wiring
+    const contactBtn = document.getElementById('contactBtn');
+    const contact = document.getElementById('contact');
+    const closeContact = document.getElementById('closeContact');
+
+    contactBtn.onclick = () => {
+      // fill fields
+      document.getElementById('c_name').textContent = BIO.name;
+      document.getElementById('c_loc').textContent = BIO.location;
+      document.getElementById('c_roles').textContent = BIO.roles;
+      document.getElementById('c_email').textContent = BIO.email;
+      const li = document.getElementById('c_li'); li.href = BIO.linkedIn; li.textContent = BIO.linkedIn;
+      const web = document.getElementById('c_web'); web.href = BIO.website; web.textContent = BIO.website;
+      const tags = document.getElementById('c_tags'); tags.innerHTML="";
+      (BIO.highlights || []).forEach(t => { const s=document.createElement('span'); s.className='pill'; s.textContent=t; tags.appendChild(s); });
+      contact.style.display = 'block';
+    };
+    closeContact.onclick = () => contact.style.display = 'none';
   </script>
 </body>
 </html>
